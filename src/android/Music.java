@@ -88,7 +88,7 @@ public class Music  extends CordovaPlugin {
             callbackContext.success(psRes);
             return true;
         }
-        else if (action.equals("getAllSongs")) {
+        else if (action.equals("getSongs")) {
             ContentResolver contentResolver =this.cordova.getActivity().getContentResolver();
             String[] proj = {"*"};
             Uri psUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
