@@ -41,6 +41,7 @@ Music.getSongs = function (success, fail) {
 /**
  * playSong
  *
+ * @param {int} id
  * @param {Function} successCallback
  * @param {Function} errorCallback
  */
