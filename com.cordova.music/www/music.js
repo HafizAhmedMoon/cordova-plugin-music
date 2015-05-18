@@ -1,4 +1,3 @@
-cordova.define("com.cordova.music.music", function(require, exports, module) {
 var argscheck = require('cordova/argscheck'),
     utils = require('cordova/utils'),
     exec = require('cordova/exec');
@@ -74,4 +73,3 @@ if (cordova.platformId === 'android' || cordova.platformId === 'amazon-fireos' |
         channel.initializationComplete('onMusicPluginReady');
     });
 }
-});
