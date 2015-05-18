@@ -3,19 +3,22 @@ package com.cordova.music;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
+import org.apache.cordova.PluginResult;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Music  extends CordovaPlugin {
+public class Music  extends CordovaPlugin implements OnCompletionListener, OnPreparedListener {
 
     MediaPlayer player= new MediaPlayer();
+    private CallbackContext messageChannel;
     /**
      * Executes the request and returns PluginResult.
      *
@@ -62,9 +65,7 @@ public class Music  extends CordovaPlugin {
             Long playListID = args.getLong(0);
             String[] proj = {"*"};
             Uri psUri = MediaStore.Audio.Playlists.Members.getContentUri("external", playListID);
-            final String psIdKey = MediaStore.Audio.Playlists.Members._ID;
-            final String psTitleKey = MediaStore.Audio.Playlists.Members.TITLE;
-            final String psArtistKey = MediaStore.Audio.Playlists.Members.ARTIST;
+            
 
             Cursor psCursor = contentResolver.query(psUri, proj, null, null, null);
 
@@ -78,9 +79,9 @@ public class Music  extends CordovaPlugin {
             {
                 psCursor.moveToPosition(i);
                 JSONObject r = new JSONObject();
-                r.put("id", psCursor.getString((psCursor.getColumnIndex(psIdKey))));
-                r.put("title", psCursor.getString((psCursor.getColumnIndex(psTitleKey))));
-                r.put("artist", psCursor.getString((psCursor.getColumnIndex(psArtistKey))));
+                r.put("id", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID))));
+                r.put("title", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))));
+                r.put("artist", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST))));
                 psRes.put(i,r);
             }
             if(psCursor != null)
@@ -92,9 +93,6 @@ public class Music  extends CordovaPlugin {
             ContentResolver contentResolver =this.cordova.getActivity().getContentResolver();
             String[] proj = {"*"};
             Uri psUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
-            final String psIdKey = MediaStore.Audio.Media._ID;
-            final String psTitleKey = MediaStore.Audio.Media.TITLE;
-            final String psArtistKey = MediaStore.Audio.Media.ARTIST;
 
             Cursor psCursor = contentResolver.query(psUri, proj, null, null, null);
 
@@ -108,10 +106,10 @@ public class Music  extends CordovaPlugin {
             {
                 psCursor.moveToPosition(i);
                 JSONObject r = new JSONObject();
-                r.put("id", psCursor.getString((psCursor.getColumnIndex(psIdKey))));
-                r.put("title", psCursor.getString((psCursor.getColumnIndex(psTitleKey))));
-                r.put("artist", psCursor.getString((psCursor.getColumnIndex(psArtistKey))));
-                System.out.println(psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.DATA))));
+                r.put("id", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media._ID))));
+                r.put("title", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))));
+                r.put("artist", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST))));
+                //System.out.println(psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.DATA))));
                 psRes.put(i,r);
             }
             if(psCursor != null)
@@ -137,20 +135,25 @@ public class Music  extends CordovaPlugin {
             sCurosr.moveToPosition(0);
             final Uri sUri= Uri.parse(sCurosr.getString(sCurosr.getColumnIndex(sDataKey)));
             if (sUri == null) {
-                System.out.println("Called playAudio with null data stream.");
+                callbackContext.error("Called playAudio with null data stream.");
                 return false;
             }
             try {
-                player.setDataSource(this.cordova.getActivity().getApplicationContext(), sUri);
-                player.prepare();
+                if(player.isPlaying()){
+                    player.seekTo(0);
+                    player.pause();
+                }
+                this.player.reset();
+                this.player.setDataSource(this.cordova.getActivity().getApplicationContext(), sUri);
+                this.player.prepare();
+                this.player.setOnPreparedListener(this);
                 player.start();
             } catch (Exception e) {
-                System.out.println("Failed to start MediaPlayer: " + e.getMessage());
+                callbackContext.error("Failed to start MediaPlayer: " + e.getMessage());
                 return false;
             }
             if(sCurosr!= null)
                 sCurosr.close();
-            callbackContext.success();
             return true;
         }
         else if (action.equals("stopSong")) {
@@ -158,19 +161,33 @@ public class Music  extends CordovaPlugin {
                 if(player.isPlaying()){
                     player.pause();
                     player.seekTo(0);
-                    /*player.release();
-                    player=null;*/
+                    callbackContext.success("song stopped");
                 }
             } catch (Exception e) {
-                System.out.println("Failed to stop MediaPlayer: " + e.getMessage());
+                callbackContext.error("Failed to stop MediaPlayer: " + e.getMessage());
                 return false;
             }
-            callbackContext.success();
+            return true;
+        }
+        else if (action.equals("messageChannel")) {
+            messageChannel = callbackContext;
             return true;
         }
         else {
             return false;
         }
+    }
+    public void onCompletion(MediaPlayer player) {
+        PluginResult pluginResult = new PluginResult(PluginResult.Status.OK, "Audio Completed");
+        pluginResult.setKeepCallback(true);
+        if (messageChannel != null) {
+            messageChannel.sendPluginResult(pluginResult);
+        }
+    }
+
+    public void onPrepared(MediaPlayer player) {
+        // Listen for playback completion
+        this.player.setOnCompletionListener(this);
     }
 
 }
