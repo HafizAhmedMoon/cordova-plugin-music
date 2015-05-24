@@ -6,6 +6,15 @@ var Music = function () {
 };
 var currentCallback=null;
 
+function idToInt(callback){
+    return function(data){
+        data.forEach(function(obj){
+            obj.id = Number(obj.id)
+        });
+        callback(data);
+    }
+}
+
 /**
  * getPlayLists
  *
@@ -14,7 +23,7 @@ var currentCallback=null;
  * @return {Array} An object of key/value pairs of all Playlists.
  */
 Music.getPlaylists = function (success, fail) {
-    exec(success, fail, 'Music', 'getPlaylists', []);
+    exec(idToInt(success), fail, 'Music', 'getPlaylists', []);
 };
 
 /**
@@ -25,7 +34,7 @@ Music.getPlaylists = function (success, fail) {
  * @return {Array} An object of key/value pairs of all Songs.
  */
 Music.getSongsFromPlaylist = function (id, success, fail) {
-    exec(success, fail, 'Music', 'getSongsFromPlaylist', [id]);
+    exec(idToInt(success), fail, 'Music', 'getSongsFromPlaylist', [id]);
 };
 
 /**
@@ -36,7 +45,7 @@ Music.getSongsFromPlaylist = function (id, success, fail) {
  * @return {Array} An object of key/value pairs of all Songs.
  */
 Music.getSongs = function (success, fail) {
-    exec(success, fail, 'Music', 'getSongs', []);
+    exec(idToInt(success), fail, 'Music', 'getSongs', []);
 };
 
 /**
