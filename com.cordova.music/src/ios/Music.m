@@ -4,7 +4,7 @@
 
 - (void)getPlaylists:(CDVInvokedUrlCommand*)command
 {
-    
+     [self.commandDelegate runInBackground:^{
     //getAllPlaylists
     MPMediaQuery *myPlaylistsQuery = [MPMediaQuery playlistsQuery];
     NSArray *playlists = [myPlaylistsQuery collections];
@@ -25,11 +25,12 @@
                                      messageAsArray:returnPlaylits];
     
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+         }];
 }
 
 - (void)getSongs:(CDVInvokedUrlCommand*)command
 {
-    
+  [self.commandDelegate runInBackground:^{
     //getAllSongs
     MPMediaQuery *mySongsQuery = [MPMediaQuery songsQuery];
     NSArray *songs = [mySongsQuery items];
@@ -54,11 +55,12 @@
                                      messageAsArray:songsArray];
     
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+      }];
 }
 
 - (void)getSongsFromPlaylist:(CDVInvokedUrlCommand*)command
 {
-    
+     [self.commandDelegate runInBackground:^{
     //getPlaylistById
     NSString *playlistId = [command.arguments objectAtIndex:0];
     NSLog(@"PlaylistId: %@", playlistId);
@@ -105,11 +107,13 @@
                                      messageAsArray:songsArray];
     
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+          }];
 }
 
 
 - (void)playSong:(CDVInvokedUrlCommand*)command
 {
+     [self.commandDelegate runInBackground:^{
     
     //getPlaylistById
     NSString *songId = [command.arguments objectAtIndex:0];
@@ -136,17 +140,48 @@
         NSLog(@"songName: %@", songName);
         
         // Play the item using AVPlayer
-        AVPlayerItem *playerItem = [[AVPlayerItem alloc] initWithURL:url];
-        AVPlayer *player = [[AVPlayer alloc] initWithPlayerItem:playerItem];
+        //AVPlayerItem *playerItem = [[AVPlayerItem alloc] initWithURL:url];
+        
+        if (player != nil) {
+            [player pause];
+            player.currentTime=0.0f;
+            [player stop];
+            player = nil;
+            [NSThread sleepForTimeInterval:.5];
+
+        }
+        
+        
+        player = [[AVAudioPlayer alloc] initWithContentsOfURL: url
+                                                                        error: nil];
+        if (player.playing) {
+            [player stop];
+        }
+            
         player.delegate = self;
+        [player prepareToPlay];
         [player play];
     }
-    
+     }];
 }
 
-- (void)audioPlayerDidFinishPlaying:(AVPlayer*)player successfully:(BOOL)flag
+- (void)stopSong:(CDVInvokedUrlCommand*)command
 {
-    
+    [self.commandDelegate runInBackground:^{
+
+    if (player.playing) {
+        NSLog(@"Stopping song");
+
+        [player stop];
+     }
+    }];
+
+}
+
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag
+{
+    NSLog(@"audioPlayerDidFinishPlaying");
+
     NSString* jsString = nil;
     if (flag) {
         jsString = [NSString stringWithFormat:@"%@(\"%s\");", @"cordova.require('cordova-plugin-media.Media').currentCallback", "Audio Completed"];
