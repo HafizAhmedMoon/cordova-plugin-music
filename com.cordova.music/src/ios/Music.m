@@ -39,11 +39,13 @@
     for (MPMediaItem *song in songs) {
         NSString *songtId = [NSString stringWithFormat:@"%@", [song valueForProperty: MPMediaItemPropertyPersistentID]];
         NSString *songName = [NSString stringWithFormat:@"%@", [song valueForProperty: MPMediaItemPropertyTitle]];
+        NSString *songArtist = [NSString stringWithFormat:@"%@", [song valueForProperty: MPMediaItemPropertyArtist]];
         
         NSMutableDictionary* so = [NSMutableDictionary dictionaryWithCapacity:1];
         
         [so setObject: songName forKey:@"name"];
         [so setObject: songtId forKey:@"id"];
+        [so setObject: songArtist forKey:@"artist"];
         
         [songsArray addObject:so];
     }
@@ -87,13 +89,15 @@
             NSLog(@"Songs Availabe");
             
             for (MPMediaItem *song in songs) {
-                NSString *songtId = [song valueForProperty: MPMediaItemPropertyPersistentID];
-                NSString *songName = [song valueForProperty: MPMediaItemPropertyTitle];
+                NSString *songtId = [NSString stringWithFormat:@"%@", [song valueForProperty: MPMediaItemPropertyPersistentID]];
+                NSString *songName = [NSString stringWithFormat:@"%@", [song valueForProperty: MPMediaItemPropertyTitle]];
+                NSString *songArtist = [NSString stringWithFormat:@"%@", [song valueForProperty: MPMediaItemPropertyArtist]];
                 
                 NSMutableDictionary* so = [NSMutableDictionary dictionaryWithCapacity:1];
                 
                 [so setObject: songName forKey:@"name"];
                 [so setObject: songtId forKey:@"id"];
+                [so setObject: songArtist forKey:@"artist"];
                 
                 [songsArray addObject:so];
             }
