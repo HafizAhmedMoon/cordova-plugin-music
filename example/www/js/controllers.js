@@ -16,6 +16,9 @@ angular.module('starter.controllers', [])
             $scope.$$phase || $scope.$digest();
         })
         $scope.play= function (s) {
+            $scope.songs.forEach(function (obj) {
+                obj.playing = false;
+            });
             if(s.playing){
                 Music.stopSong().then(function(msg){
                     s.playing=false;
@@ -43,6 +46,9 @@ angular.module('starter.controllers', [])
             $scope.$$phase || $scope.$digest();
         });
         $scope.play= function (s) {
+            $scope.songs.forEach(function (obj) {
+                obj.playing = false;
+            });
             if(s.playing){
                 Music.stopSong().then(function(msg){
                     s.playing=false;
