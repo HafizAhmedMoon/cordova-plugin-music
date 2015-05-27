@@ -143,9 +143,8 @@
         //AVPlayerItem *playerItem = [[AVPlayerItem alloc] initWithURL:url];
         
         if (player != nil) {
-            [player pause];
-            player.currentTime=0.0f;
             [player stop];
+            player.currentTime=0.0f;
             player = nil;
             [NSThread sleepForTimeInterval:.5];
 
@@ -154,9 +153,7 @@
         
         player = [[AVAudioPlayer alloc] initWithContentsOfURL: url
                                                                         error: nil];
-        if (player.playing) {
-            [player stop];
-        }
+        
             
         player.delegate = self;
         [player prepareToPlay];
@@ -174,6 +171,12 @@
 
         [player stop];
      }
+        CDVPluginResult* pluginResult = [CDVPluginResult
+                                         resultWithStatus:CDVCommandStatus_OK
+                                         messageAsString: @"Audio Stopped"];
+        
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    
     }];
 
 }
@@ -184,9 +187,9 @@
 
     NSString* jsString = nil;
     if (flag) {
-        jsString = [NSString stringWithFormat:@"%@(\"%s\");", @"cordova.require('cordova-plugin-media.Media').currentCallback", "Audio Completed"];
+        jsString = [NSString stringWithFormat:@"%@(\"%s\");", @"window.cordova.plugins.Music.onMessageFromNative", "Audio Completed"];
     } else {
-        jsString = [NSString stringWithFormat:@"%@(\"%s\");", @"cordova.require('cordova-plugin-media.Media').currentCallback", "Error"];
+        jsString = [NSString stringWithFormat:@"%@(\"%s\");", @"window.cordova.plugins.Music.onMessageFromNative", "Error"];
     }
     [self.commandDelegate evalJs:jsString];
 }

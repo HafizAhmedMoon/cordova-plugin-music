@@ -6,14 +6,6 @@ var Music = function () {
 };
 var currentCallback=null;
 
-function idToInt(callback){
-    return function(data){
-        data.forEach(function(obj){
-            obj.id = Number(obj.id)
-        });
-        callback(data);
-    }
-}
 
 /**
  * getPlayLists
@@ -23,7 +15,7 @@ function idToInt(callback){
  * @return {Array} An object of key/value pairs of all Playlists.
  */
 Music.getPlaylists = function (success, fail) {
-    exec(idToInt(success), fail, 'Music', 'getPlaylists', []);
+    exec(success, fail, 'Music', 'getPlaylists', []);
 };
 
 /**
@@ -34,7 +26,7 @@ Music.getPlaylists = function (success, fail) {
  * @return {Array} An object of key/value pairs of all Songs.
  */
 Music.getSongsFromPlaylist = function (id, success, fail) {
-    exec(idToInt(success), fail, 'Music', 'getSongsFromPlaylist', [id]);
+    exec(success, fail, 'Music', 'getSongsFromPlaylist', [id]);
 };
 
 /**
@@ -45,7 +37,7 @@ Music.getSongsFromPlaylist = function (id, success, fail) {
  * @return {Array} An object of key/value pairs of all Songs.
  */
 Music.getSongs = function (success, fail) {
-    exec(idToInt(success), fail, 'Music', 'getSongs', []);
+    exec(success, fail, 'Music', 'getSongs', []);
 };
 
 /**
@@ -63,11 +55,9 @@ Music.stopSong = function (success, fail) {
     exec(success, fail, 'Music', 'stopSong', []);
 };
 
-module.exports = Music;
-
-function onMessageFromNative(msg) {
+Music.onMessageFromNative = function (msg) {
     if (msg) {
-        currentCallback(msg)
+        currentCallback && currentCallback(msg)
     }
 }
 if (cordova.platformId === 'android' || cordova.platformId === 'amazon-fireos' || cordova.platformId === 'windowsphone') {
@@ -78,7 +68,9 @@ if (cordova.platformId === 'android' || cordova.platformId === 'amazon-fireos' |
     channel.waitForInitialization('onMusicPluginReady');
 
     channel.onCordovaReady.subscribe(function() {
-        exec(onMessageFromNative, undefined, 'Music', 'messageChannel', []);
+        exec(Music.onMessageFromNative, undefined, 'Music', 'messageChannel', []);
         channel.initializationComplete('onMusicPluginReady');
     });
 }
+
+module.exports = Music;
