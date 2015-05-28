@@ -80,7 +80,7 @@ public class Music  extends CordovaPlugin implements OnCompletionListener, OnPre
                 psCursor.moveToPosition(i);
                 JSONObject r = new JSONObject();
                 r.put("id", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Playlists.Members.AUDIO_ID))));
-                r.put("title", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))));
+                r.put("name", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))));
                 r.put("artist", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST))));
                 psRes.put(i,r);
             }
@@ -107,7 +107,7 @@ public class Music  extends CordovaPlugin implements OnCompletionListener, OnPre
                 psCursor.moveToPosition(i);
                 JSONObject r = new JSONObject();
                 r.put("id", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media._ID))));
-                r.put("title", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))));
+                r.put("name", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.TITLE))));
                 r.put("artist", psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.ARTIST))));
                 //System.out.println(psCursor.getString((psCursor.getColumnIndex(MediaStore.Audio.Media.DATA))));
                 psRes.put(i,r);
