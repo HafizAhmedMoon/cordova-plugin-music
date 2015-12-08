@@ -18,10 +18,7 @@
     "org.apache.cordova.device",
     "org.apache.cordova.console",
     "com.ionic.keyboard",
-    {
-      "locator": "../com.cordova.music",
-      "id": "com.cordova.music"
-    }
+    "https://github.com/hafizahmedattari/cordova-plugin-music.git"
   ],
   "cordovaPlatforms": [
     "android@3.7.1",
