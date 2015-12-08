@@ -186,7 +186,7 @@ public class Music  extends CordovaPlugin implements OnCompletionListener, OnPre
     }
 
     public void onPrepared(MediaPlayer player) {
-        // Listen for playback completion
+        // Listener for playback completion
         this.player.setOnCompletionListener(this);
     }
 

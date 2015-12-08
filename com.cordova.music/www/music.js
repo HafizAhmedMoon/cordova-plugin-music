@@ -23,7 +23,7 @@ Music.getPlaylists = function (success, fail) {
  *
  * @param {Function} successCallback
  * @param {Function} errorCallback
- * @return {Array} An object of key/value pairs of all Songs.
+ * @return {Array} An object of key/value pairs of all Songs from Playlists.
  */
 Music.getSongsFromPlaylist = function (id, success, fail) {
     exec(success, fail, 'Music', 'getSongsFromPlaylist', [id]);
